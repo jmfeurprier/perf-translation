@@ -101,11 +101,11 @@ class Translator
             throw new \RuntimeException("Failed to load i18n file.", 0, $e);
         }
 
-        if (is_null($i18n->attributes()->namespace) || ($i18n->attributes()->namespace != $namespace)) {
+        if ((null === $i18n->attributes()->namespace) || ($i18n->attributes()->namespace != $namespace)) {
             throw new \RuntimeException('I18n file not valid: namespace does not match.');
         }
 
-        if (is_null($i18n->attributes()->language) || ($i18n->attributes()->language != $this->language)) {
+        if ((null === $i18n->attributes()->language) || ($i18n->attributes()->language != $this->language)) {
             throw new \RuntimeException('I18n file not valid: language does not match.');
         }
 
@@ -114,7 +114,7 @@ class Translator
         foreach ($i18n->string as $string) {
             $stringKey = $string->attributes()->key;
 
-            if (is_null($stringKey)) {
+            if (null === $stringKey) {
                 throw new \RuntimeException('Translation file not valid: string has no key.');
             }
 
