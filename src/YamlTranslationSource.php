@@ -10,6 +10,8 @@ use Symfony\Component\Yaml\Parser as YamlParser;
 
 class YamlTranslationSource implements TranslationSourceInterface
 {
+    private const NAMESPACE_SEPARATOR = '.';
+
     private YamlParser $yamlParser;
 
     private SourceInterface $yamlSource;
@@ -77,9 +79,22 @@ class YamlTranslationSource implements TranslationSourceInterface
         }
     }
 
-    private function parseLanguageTranslations(string $languageId, array $languageTranslations): void
-    {
+    private function parseLanguageTranslations(
+        string $languageId,
+        array $languageTranslations,
+        string $keyPrefix = null
+    ): void {
         foreach ($languageTranslations as $key => $message) {
+            if (null !== $keyPrefix) {
+                $key = $keyPrefix . self::NAMESPACE_SEPARATOR . $key;
+            }
+
+            if (is_array($message)) {
+                $this->parseLanguageTranslations($languageId, $message, $key);
+
+                continue;
+            }
+
             $this->addTranslation($languageId, $key, $message);
         }
     }

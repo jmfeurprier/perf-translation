@@ -137,6 +137,41 @@ class YamlTranslationSourceTest extends TestCase
         $this->assertNull($result);
     }
 
+    public function testGetTranslationsWithDeepNamespacing()
+    {
+        $this->givenParsedYaml(
+            [
+                'en' => [
+                    'foo' => [
+                        'bar' => [
+                            'baz' => 'qux',
+                            'abc' => 'def',
+                        ],
+                        'ghi' => 'jkl',
+                    ],
+                    'mno' => 'pqr',
+                ],
+            ]
+        );
+
+        $result = $this->translationSource->getTranslations();
+
+        $expected = [
+            'en' => [
+                'foo.bar.baz' => 'qux',
+                'foo.bar.abc' => 'def',
+                'foo.ghi'     => 'jkl',
+                'mno'         => 'pqr',
+            ],
+        ];
+
+        foreach ($expected as $languageId => $languageTranslations) {
+            foreach ($languageTranslations as $key => $message) {
+                $this->assertSame($message, $result->tryGet($languageId, $key)->render());
+            }
+        }
+    }
+
     private function givenParsedYaml($parsed): void
     {
         $this->source->expects($this->once())->method('getContent')->willReturn('');
